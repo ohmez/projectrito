@@ -1,0 +1,29 @@
+body {
+    background-color: aqua;
+    overflow: hidden scroll;
+    text-align: center;
+}
+#banner {
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font: bold, bolder;
+    text-shadow: 0px 1px rgb(2, 2, 46);
+}
+#solo {
+    position: fixed;
+    bottom: 50%;
+    right: 45%
+}
+#ranksplit {
+    width: 30%;
+    margin: auto;
+    display: flex;
+}
+.left {
+    position: relative;
+    left: 1px;
+    width: 50%;
+}
+.right {
+    position: relative;
+    right: 1px;
+    width: 50%;

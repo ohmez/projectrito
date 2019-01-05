@@ -1,0 +1,30 @@
+<div id="first5Matches">
+{{#each first5}}
+<div>
+    <div>
+    {{#if win}} Win {{else}} Loss {{/if}}
+    </div>
+    Champion: {{championName}}
+    </div>
+    <div>
+    Lane: {{lane}}
+    </div>
+    <div>
+    Your KDA: {{kda}}<br>
+    vs<br>
+    Avg game KDA: {{avg.kda}}
+    </div>
+    <div>
+    Creep Score: {{cs}}
+    </div>
+    <div>
+    Vision Score: {{vs}}
+    </div>
+    <div>
+    {{#if fb}}First Blood{{else}}{{/if}}
+    </div>
+
+</div>
+<br>
+{{/each}}
+</div>

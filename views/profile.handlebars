@@ -1,0 +1,46 @@
+    <section id="banner">
+    <h1>Welcome to {{name}}'s QwikStats</h1>
+    <h2>{{name}}'s current level: {{summonerLevel}}</h2>
+    <div id="ranksplit">
+        <div class="left">
+            <h3>solo/duo {{rank}}</h3>
+        </div>
+        <div class="right">
+        <h3>flex {{flex}}</h3>
+        </div>
+    </div>
+    </section>
+<section>
+    {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}
+    <h4>{{name}}'s account was last played on {{revisionDate}}</h4>
+    {{#if errMsg}}
+    <a href="/">Search a Summoner Name</a>
+    {{else}}
+    {{#if masteries}}
+    <form method="POST" action="/profile">
+        <div>
+            <input type="hidden" name="id" id="id" value="{{id}}">
+            <input type="hidden" name="name" id="name" value="{{name}}">
+            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{summonerLevel}}">
+            <input type="hidden" name="profileIconId" id="profileIconId" value="{{profileIconId}}">
+            <input type="hidden" name="revisionDate" id="revisionDate" value="{{revisionDate}}">
+            <input type="submit" value="Hide Masteries">
+            <p>{{errMsg}}</p>
+        </div>
+    </form>
+    {{>mastery/masteries}}
+    {{else}}
+     <form method="POST" action="/masteries">
+        <div>
+            <input type="hidden" name="id" id="id" value="{{id}}">
+            <input type="hidden" name="name" id="name" value="{{name}}">
+            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{summonerLevel}}">
+            <input type="hidden" name="profileIconId" id="profileIconId" value="{{profileIconId}}">
+            <input type="hidden" name="revisionDate" id="revisionDate" value="{{revisionDate}}">
+            <input type="submit" value="Get Masteries">
+            <p>{{errMsg}}</p>
+            {{/if}}
+        </div>
+    </form>
+    {{/if}}
+</section>

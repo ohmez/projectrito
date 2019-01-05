@@ -1,0 +1,35 @@
+{
+  "name": "my_rito_app",
+  "version": "1.0.0",
+  "description": "get your summoner info and utilize riots open api.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ohmez/projectriot.git"
+  },
+  "keywords": [
+    "riot",
+    "javascript",
+    "app",
+    "api"
+  ],
+  "author": "keagan cheatwood",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ohmez/projectriot/issues"
+  },
+  "homepage": "https://github.com/ohmez/projectriot#readme",
+  "dependencies": {
+    "dotenv": "^6.2.0",
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0",
+    "mysql2": "^1.6.4",
+    "path": "^0.12.7",
+    "request": "^2.88.0",
+    "sequelize": "^4.42.0",
+    "sequelize-cli": "^5.4.0"
+  }
+}

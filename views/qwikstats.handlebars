@@ -1,0 +1,68 @@
+    <section id="banner">
+    <h1>Welcome to {{this.name}}'s QwikStats</h1>
+    <h2>{{this.name}}'s current level: {{this.summonerLevel}}</h2>
+    <div id="ranksplit">
+        <div class="left">
+            <h3>solo/duo</h3>
+            <h3>{{this.solo.tier}}-{{this.solo.rank}}</h3>
+            <h3>LP: {{this.solo.leaguePoints}}</h3> 
+            <h3>Win Ratio: {{this.solo.wr}}</h3>
+            <h3>{{this.solo.fr}}.</h3>
+        </div>
+        <div class="right">
+            <h3>flex</h3> 
+            <h3>{{this.flex.tier}}-{{this.flex.rank}}</h3>
+            <h3>LP: {{this.flex.leaguePoints}}</h3>
+            <h3>Win Ratio: {{this.flex.wr}}</h3>
+            <h3>{{this.flex.fr}}</h3>
+        </div>
+    </div>
+        <h4>Any Win Ratio greater than 1 is a climbing WR.</h4>
+        <h4>Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
+    </section>
+<section>
+    {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}
+    <h4>{{this.name}}'s account was last played on {{this.revisionDate}}</h4>
+    <h4>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h4>
+    {{#if errMsg}}
+    <p>{{errMsg}}</p>
+    <a href="/">Search a Summoner Name</a>
+    {{else}}
+    {{#if masteries}}
+    <form method="POST" action="/profile">
+        <div>
+            <input type="hidden" name="id" id="id" value="{{this.id}}">
+            <input type="hidden" name="name" id="name" value="{{this.name}}">
+            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
+            <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
+            <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
+            <input type="submit" value="Hide Masteries">
+            <p>{{errMsg}}</p>
+        </div>
+    </form>
+    {{>mastery/masteries}}
+    {{else}}
+     <form method="POST" action="/masteries">
+        <div>
+            <input type="hidden" name="id" id="id" value="{{this.id}}">
+            <input type="hidden" name="name" id="name" value="{{this.name}}">
+            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
+            <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
+            <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
+            <input type="submit" value="Get Masteries">
+            <p>{{errMsg}}</p>
+            {{/if}}
+        </div>
+    </form>
+    {{/if}}
+</section>
+<section>
+    {{#if this.first5}}
+    {{>matches/first5}}
+    {{/if}}
+</section>
+<section>
+    anything below this is being worked. 
+    {{this.new}}
+    
+</section>
