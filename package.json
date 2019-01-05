@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ohmez/projectriot.git"
+    "url": "git+https://github.com/ohmez/projectrito.git"
   },
   "keywords": [
     "riot",
@@ -19,9 +19,9 @@
   "author": "keagan cheatwood",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ohmez/projectriot/issues"
+    "url": "https://github.com/ohmez/projectrito/issues"
   },
-  "homepage": "https://github.com/ohmez/projectriot#readme",
+  "homepage": "https://github.com/ohmez/projectrito#readme",
   "dependencies": {
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
