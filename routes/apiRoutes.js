@@ -7,6 +7,7 @@ var champions = JSON.parse(JSON.stringify(jsonfile.data));
 module.exports = (app) => {
     app.post("/findsumm", (req,res) => {
         var name = req.body.summonerName;
+        console.log(name)
         request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+name+'?api_key='+key, (err, response, body) =>{
             if(err) throw err;
             if(response.statusCode === 200) {
