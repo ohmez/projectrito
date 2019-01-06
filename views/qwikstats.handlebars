@@ -1,67 +1,160 @@
-    <section id="banner">
-        <button class="back"> Back to Search</button>
-    <h1>Welcome to {{this.name}}'s QwikStats</h1>
-        <img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/{{profileIconId}}.png" alt="">
-    <h2>{{this.name}}'s current level: {{this.summonerLevel}}</h2>
-    <div id="ranksplit">
-        <div class="left">
-            <h3>solo/duo</h3>
-            <h3>{{this.solo.tier}}-{{this.solo.rank}}</h3>
-            <h3>LP: {{this.solo.leaguePoints}}</h3> 
-            <h3>Win Ratio: {{this.solo.wr}}</h3>
-            <h3>{{this.solo.fr}}.</h3>
-        </div>
-        <div class="right">
-            <h3>flex</h3> 
-            <h3>{{this.flex.tier}}-{{this.flex.rank}}</h3>
-            <h3>LP: {{this.flex.leaguePoints}}</h3>
-            <h3>Win Ratio: {{this.flex.wr}}</h3>
-            <h3>{{this.flex.fr}}</h3>
-        </div>
-    </div>
-        <h4>Any Win Ratio greater than 1 is a climbing WR.</h4>
-        <h4>Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
-    </section>
-<section>
-   <!-- {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}-->
-    <h4>{{this.name}}'s account was last played on {{this.revisionDate}}</h4>
-    <h4>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h4>
-    {{#if errMsg}}
-    <p>{{errMsg}}</p>
-    <a href="/">Search a Summoner Name</a>
-    {{else}}
-    {{#if masteries}}
-    <form method="POST" action="/profile">
-        <div>
-            <input type="hidden" name="id" id="id" value="{{this.id}}">
-            <input type="hidden" name="name" id="name" value="{{this.name}}">
-            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
-            <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
-            <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
-            <input type="submit" value="Hide Masteries">
-            <p>{{errMsg}}</p>
-        </div>
-    </form>
-    {{>mastery/masteries}}
-    {{else}}
-     <form method="POST" action="/masteries">
-        <div>
-            <input type="hidden" name="id" id="id" value="{{this.id}}">
-            <input type="hidden" name="name" id="name" value="{{this.name}}">
-            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
-            <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
-            <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
-            <input type="submit" value="Get Masteries">
-            <p>{{errMsg}}</p>
-            {{/if}}
-        </div>
-    </form>
-    {{/if}}
+<section id="header">
+    <header>
+        <span class="image avatar"><img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/{{profileIconId}}.png" alt="" /></span>
+        <h1 id="logo">{{this.name}}</h1>
+        <p>Level: {{this.summonerLevel}}</p>
+    </header>
+    <nav id="nav">
+        <ul>
+            <li><a href="#one" class="active">Summoner Details</a></li>
+            <li><a href="#two">Highest Mastery Champions</a></li>
+            <li><a href="#three">Recent Matches</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <ul class="icons">
+            <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+            <li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+            <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+            <li><a href="#" class="icon fa-github"><span class="label">Github</span></a></li>
+            <li><a href="#" class="icon fa-envelope"><span class="label">Email</span></a></li>
+        </ul>
+    </footer>
 </section>
-<section>
-    {{#if this.first5}}
-    {{>matches/first5}}
-    {{/if}}
+
+<div id="wrapper">
+
+    <!-- Main -->
+        <div id="main">
+
+            <!-- One -->
+                <section id="one">
+                    <div class="image main" data-position="center">
+                        <img src="/images/banner.jpg" alt="" />
+                    </div>
+                    <div class="container">
+                        <header class="major">
+                            <h2>Summoner Details</h2>
+                        </header>
+                            <div class="box alt">
+                                <div class="row gtr-50 gtr-uniform" style="text-align: center;">
+                                    <div class="col-4">
+                                        <span class="image fit">
+                                            <img src="/images/{{this.flex.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;" />
+                                            <p>Flex 5v5 : {{this.flex.tier}}-{{this.flex.rank}}</p>
+                                            <p>LP: {{this.flex.leaguePoints}}</p>
+                                            <p>Win Ratio: {{this.flex.wr}}</p>
+                                        </span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="image fit">
+                                            <img src="/images/{{this.solo.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;"/>
+                                            <p>Solo / Duo Rank : {{this.solo.tier}}-{{this.solo.rank}} </p>
+                                            <p>LP: {{this.solo.leaguePoints}}</p> 
+                                            <p>Win Ratio: {{this.solo.wr}}</p>
+                                        </span>
+                                    </div>
+                                    <div class="col-4">
+                                        <span class="image fit">
+                                            <img src="/images/{{this.flex.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;"/>
+                                            <p>Flex 3v3 : {{this.flex.tier}}-{{this.flex.rank}}</p>
+                                            <p>LP: {{this.flex.leaguePoints}}</p>
+                                            <p>Win Ratio: {{this.flex.wr}}</p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        <h4 style="text-align:center">Any Win Ratio greater than 1 is a climbing WR.</h4>
+                        <h4 style="text-align:center">Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
+                    </div>
+                </section>
+
+            <!-- Two -->
+                <section id="two">
+                    <div class="container">
+                        <h3>Most Played Champions</h3>
+                            {{#each masteries}}
+                                {{#each dataValues}}
+                        <div class="col-4">
+                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%; margin-right: auto; margin-left: auto" >
+                            <p>Champion Level : {{championLevel}}</p>
+                            <p>Champion Points: {{championPoints}}</p>
+                        </div>
+                        <div class="col-4">
+                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%;	 margin-right: auto; margin-left: auto">
+                        </div>
+                        <div class="col-4">
+                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%; margin-right: auto; margin-left: auto">
+                        </div>
+                                {{/each}}
+                            {{/each}}
+                        {{#if errMsg}}
+                            <p>{{errMsg}}</p>
+                            <a href="/">Search a Summoner Name</a>
+                            {{else}}
+                        {{#if masteries}}
+                        <form method="POST" action="/profile">
+                            <div>
+                                <input type="hidden" name="id" id="id" value="{{this.id}}">
+                                <input type="hidden" name="name" id="name" value="{{this.name}}">
+                                <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
+                                <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
+                                <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
+                                <input type="submit" value="Hide Masteries">
+                                <p>{{errMsg}}</p>
+                            </div>
+                        </form>
+                        {{>mastery/masteries}}
+                        {{else}}
+                            <form method="POST" action="/masteries">
+                                <div>
+                                    <input type="hidden" name="id" id="id" value="{{this.id}}">
+                                    <input type="hidden" name="name" id="name" value="{{this.name}}">
+                                    <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
+                                    <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
+                                    <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
+                                    <input type="submit" value="Get Masteries">
+                                    <p>{{errMsg}}</p>
+                                    {{/if}}
+                                </div>
+                            </form>
+                        {{/if}}
+                    </div>
+                </section>
+
+            <!-- Three -->
+                <section id="three">
+                    <br>
+                    {{#if this.first5}}
+                    {{>matches/first5}}
+                    {{/if}}
+                </section>
+        </div>
+
+    <!-- Footer -->
+        <section id="footer">
+            <div class="container">
+                <ul class="copyright">
+                    <li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+                </ul>
+            </div>
+        </section>
+
+
+
+
+</div>
+<!-- Scripts -->
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/js/jquery.scrollex.min.js"></script>
+    <script src="assets/js/jquery.scrolly.min.js"></script>
+    <script src="assets/js/browser.min.js"></script>
+    <script src="assets/js/breakpoints.min.js"></script>
+    <script src="assets/js/util.js"></script>
+    <script src="assets/js/profile-main.js"></script>
+
+        <button class="back"> Back to Search</button>
+
 </section>
 <section>
     anything below this is being worked. 
