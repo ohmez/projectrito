@@ -1,5 +1,6 @@
     <section id="banner">
     <h1>Welcome to {{this.name}}'s QwikStats</h1>
+        <img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/{{profileIconId}}.png" alt="">
     <h2>{{this.name}}'s current level: {{this.summonerLevel}}</h2>
     <div id="ranksplit">
         <div class="left">
@@ -21,7 +22,6 @@
         <h4>Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
     </section>
 <section>
-    {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}
     <h4>{{this.name}}'s account was last played on {{this.revisionDate}}</h4>
     <h4>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h4>
     {{#if errMsg}}
