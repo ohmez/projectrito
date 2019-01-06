@@ -1,4 +1,5 @@
     <section id="banner">
+        <button class="back"> Back to Search</button>
     <h1>Welcome to {{this.name}}'s QwikStats</h1>
     <h2>{{this.name}}'s current level: {{this.summonerLevel}}</h2>
     <div id="ranksplit">
@@ -21,7 +22,7 @@
         <h4>Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
     </section>
 <section>
-    {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}
+   <!-- {{!-- <h3>Your Icon is {{profileIconId}}</h3> --}}-->
     <h4>{{this.name}}'s account was last played on {{this.revisionDate}}</h4>
     <h4>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h4>
     {{#if errMsg}}
@@ -66,3 +67,9 @@
     {{this.new}}
     
 </section>
+
+<!--<script>
+    $(".back").on("click", function(){
+        console.log('hi')
+    })
+</script>-->
