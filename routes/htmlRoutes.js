@@ -3,6 +3,8 @@ var keys = require("../keys");
 var key = keys.riot.id;
 var request = require("request");
 var jsonfile = require("../public/champion.json");
+var itemfile = require("../public/item.json");
+var items = JSON.parse(JSON.stringify(itemfile.data));
 var champions = JSON.parse(JSON.stringify(jsonfile.data));
 
 module.exports = (app) => {
@@ -49,7 +51,9 @@ module.exports = (app) => {
                     if(err) throw err;
                     if(response.statusCode === 200) {
                         var a = JSON.parse(body);
-                        // console.log(a);
+                        console.log(a.length, 'this is the ranked stats');
+                        console.log(response, 'this is the response');
+                        console.log(body, 'this is the body');
                         if(a.length > 1) {
                             if(a[0].queueType === 'RANKED_FLEX_SR'){
                                 sum.solo = a[1];
@@ -67,7 +71,8 @@ module.exports = (app) => {
                                 sum.solo.games = (a[0].wins + a[0].losses);
                             }
                         } else {
-                            if(a[0].queueType ==='RANKED_FLEX_SR' ) {
+                            if(a.length === 0) {sum.solo = {wr:0, games:0}; sum.flex = {wr:0, games:0}}
+                            else if(a[0].queueType ==='RANKED_FLEX_SR' ) {
                                 sum.flex = a[0];
                                 sum.flex.wr = (a[0].wins/a[0].losses).toFixed(2);
                                 sum.flex.games = (a[0].wins + a[0].losses);
@@ -172,25 +177,16 @@ module.exports = (app) => {
                                                             sum.first5[index].deaths = stats.deaths;
                                                             sum.first5[index].cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled);
                                                             sum.first5[index].vs = stats.visionScore;
-                                                            if(stats.firstBloodKill || stats.firstBlodAssist) {
-                                                                sum.first5[index].fb = true;
-                                                            } else { 
-                                                                sum.first5[index].fb = false;
-                                                            }
-                                                            if(Number(stats.deaths) === 0) {
-                                                                sum.first5[index].kda = Number(stats.kills + stats.assists).toFixed(2);
-                                                            } else {
-                                                                sum.first5[index].kda = Number(Number(stats.kills)+Number(stats.assists) / Number(stats.deaths)).toFixed(2);
-                                                            }
-                                                            console.log('win/loss updated',index, sum.first5[index].win);
-                                                            console.log(stats);
+                                                            sum.first5[index].fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false;
+                                                            sum.first5[index].kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2);
                                                         }
-                                                    } // end loop for finding if game is a win or loss after identifying playeridentity.
+                                                    } // end loop for finding if game is a win or loss + gathering game stats after identifying playeridentity.
                                                     sum.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
                                                     console.log(avKda);
                                                     if(index === cb) {
                                                         res.render('qwikstats',sum);
-                                                        console.log(sum.first5);
+                                                        console.log(items, ' this is items');
+                                                        console.log(sum.first5[0].deaths);
                                                     } else {return sum} // end promise loop, this waits until last item in array returns then sends response to client else returns var sum and keeps looping
                                                 } else {
                                                     res.render('home',{errMsg:'something went wrong fetching match data'})
