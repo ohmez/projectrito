@@ -10,7 +10,8 @@ var champions = JSON.parse(JSON.stringify(jsonfile.data));
 module.exports = (app) => {
     app.get("/", (req,res) => {
         res.render("home", {
-            title: "My_Rito"
+            title: "My_Rito",
+            css: ["/assets/css/home-main.css"]
         });
     });
     app.post("/profile", (req,res) => {
@@ -184,6 +185,9 @@ module.exports = (app) => {
                                                     sum.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
                                                     console.log(avKda);
                                                     if(index === cb) {
+                                                        sum.css = {
+                                                            css: ["/assets/css/profile-main.css"]
+                                                        }
                                                         res.render('qwikstats',sum);
                                                         console.log(items, ' this is items');
                                                         console.log(sum.first5[0].deaths);
