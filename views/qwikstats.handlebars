@@ -73,7 +73,7 @@
                 <section id="two">
                     <div class="container">
                         <h3>Most Played Champions</h3>
-                            {{#each masteries}}
+                            {{!-- {{#each masteries}}
                                 {{#each dataValues}}
                         <div class="col-4">
                             <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%; margin-right: auto; margin-left: auto" >
@@ -118,16 +118,18 @@
                                     {{/if}}
                                 </div>
                             </form>
-                        {{/if}}
+                        {{/if}} --}}
                     </div>
                 </section>
 
             <!-- Three -->
                 <section id="three">
                     <br>
-                    {{#if this.first5}}
-                    {{>matches/first5}}
-                    {{/if}}
+                    <div class="container">
+                        {{#if this.first5}}
+                        {{>matches/first5}}
+                        {{/if}}
+                    </div>
                 </section>
         </div>
 
