@@ -52,9 +52,6 @@ module.exports = (app) => {
                     if(err) throw err;
                     if(response.statusCode === 200) {
                         var a = JSON.parse(body);
-                        console.log(a.length, 'this is the ranked stats');
-                        console.log(response, 'this is the response');
-                        console.log(body, 'this is the body');
                         if(a.length > 1) {
                             if(a[0].queueType === 'RANKED_FLEX_SR'){
                                 sum.solo = a[1];
@@ -83,8 +80,6 @@ module.exports = (app) => {
                                 sum.solo.games = (a[0].wins + a[0].losses);
                             }
                         }
-                        
-                        // console.log(sum);
                         request('https://na1.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key='+key, (err,response,body) => {
                             if(err) throw err;
                             if(response.statusCode === 200) { 
@@ -101,9 +96,6 @@ module.exports = (app) => {
                                     total += parseInt(masterWr[x]);
                                 }
                                 var avg = total/masterWr.length;
-                                // console.log(total);
-                                // console.log('total above then average mster WR');
-                                // console.log(avg);
                                 sum.masters = {avg:avg};
                                 var flexFr; 
                                 var soloFr;
@@ -183,14 +175,35 @@ module.exports = (app) => {
                                                         }
                                                     } // end loop for finding if game is a win or loss + gathering game stats after identifying playeridentity.
                                                     sum.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
-                                                    console.log(avKda);
                                                     if(index === cb) {
                                                         sum.css = {
                                                             css: ["/assets/css/profile-main.css"]
                                                         }
-                                                        res.render('qwikstats',sum);
-                                                        console.log(items, ' this is items');
-                                                        console.log(sum.first5[0].deaths);
+                                                        request('https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + sum.id + '?api_key=' + key, (err, response, body) => {
+                                                            if (err) throw err;
+                                                            if (response.statusCode == 200) {
+                                                                console.log('api masteries worked');
+                                                                var masteries = JSON.parse(body);
+                                                                var edited = [];
+                                                                for (x = 0; x < masteries.length; x++) {
+                                                                    var utcSeconds = parseInt(masteries[x].lastPlayTime);
+                                                                    var d = new Date(0).setUTCMilliseconds(utcSeconds);
+                                                                    masteries[x].lastPlayTime = d;
+                                                                    for (var prop in champions) {
+                                                                        if (Number(champions[prop].key) === masteries[x].championId) {
+                                                                            masteries[x].championName = champions[prop].name;
+                                                                        }
+                                                                    }
+                                                                    edited.push(masteries[x]);
+                                                                }
+                                                                sum.masteries = {all: edited};
+                                                                sum.masteries.top3 = [edited[0],edited[1],edited[3]];
+                                                                console.log(sum.masteries.top3);
+                                                                res.render('qwikstats',sum);
+                                                            } else {
+                                                                res.render('home',{errMsg: 'something went wrong fetching masteries'});
+                                                            }
+                                                        });
                                                     } else {return sum} // end promise loop, this waits until last item in array returns then sends response to client else returns var sum and keeps looping
                                                 } else {
                                                     res.render('home',{errMsg:'something went wrong fetching match data'})
