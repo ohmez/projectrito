@@ -29,104 +29,56 @@ module.exports = (app) => {
     app.get("/stats/:sumname", (req,res) => {
         var sum = {};
         sum.name = req.params.sumname;
+        // first we get the summoner information and store it as an object. 
         request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
             if(err) throw err;
             if(response.statusCode === 200) {
                 console.log('api summoner call worked');
-                var summoner = JSON.parse(body);
-                var utcSeconds = summoner.revisionDate;
+                sum = JSON.parse(body);
+                var utcSeconds = sum.revisionDate;
                 var d = new Date(0);
-                var u = new Date();
                 d.setUTCMilliseconds(utcSeconds);
-                summoner.revisionDate = d;
-                sum.revisionDate = summoner.revisionDate;
-                sum.profileIconId = summoner.profileIconId;
-                sum.puuid = summoner.puuid;
-                sum.summonerLevel = summoner.summonerLevel;
-                sum.revisionDate = summoner.revisionDate;
-                sum.id = summoner.id;
-                sum.accountId = summoner.accountId;
-                sum.updated = u.toDateString();
-                sum.name = summoner.name.trim();
+                sum.revisionDate = d;
+                sum.updated = new Date().toDateString();
+                sum.name = sum.name.trim();
+                sum.css = {
+                    css: ["/assets/css/profile-main.css"]
+                }
+                // then we get the ranked information and store it as children of the summoner object henceforth known as `sum`
                 request('https://na1.api.riotgames.com/lol/league/v4/positions/by-summoner/'+sum.id+'?api_key='+key,(err,response,body) => {
                     if(err) throw err;
                     if(response.statusCode === 200) {
                         var a = JSON.parse(body);
-                        if(a.length > 1) {
-                            if(a[0].queueType === 'RANKED_FLEX_SR'){
-                                sum.solo = a[1];
-                                sum.solo.wr = (a[1].wins/a[1].losses).toFixed(2);
-                                sum.solo.games = (a[1].wins + a[1].losses);
-                                sum.flex = a[0];
-                                sum.flex.wr = (a[0].wins/a[0].losses).toFixed(2);
-                                sum.flex.games = (a[0].wins + a[0].losses);
-                            } else {
-                                sum.flex = a[1];
-                                sum.flex.wr = (a[1].wins/a[1].losses).toFixed(2);
-                                sum.flex.games = (a[1].wins + a[1].losses);
-                                sum.solo = a[0];
-                                sum.solo.wr = (a[0].wins/a[0].losses).toFixed(2);
-                                sum.solo.games = (a[0].wins + a[0].losses);
-                            }
-                        } else {
-                            if(a.length === 0) {sum.solo = {wr:0, games:0}; sum.flex = {wr:0, games:0}}
-                            else if(a[0].queueType ==='RANKED_FLEX_SR' ) {
-                                sum.flex = a[0];
-                                sum.flex.wr = (a[0].wins/a[0].losses).toFixed(2);
-                                sum.flex.games = (a[0].wins + a[0].losses);
-                            } else {
-                                sum.solo = a[0];
-                                sum.solo.wr = (a[0].wins/a[0].losses).toFixed(2);
-                                sum.solo.games = (a[0].wins + a[0].losses);
-                            }
+                        for (x=0; x<a.length; x++) {
+                            a[x].games = (a[x].wins + a[x].losses);
+                            a[x].wr = (a[x].wins/a[x].losses).toFixed(2);
+                            a[x].queueType === 'RANKED_FLEX_SR' ? sum.flex5 = a[x] : a[x];
+                            a[x].queueType === 'RANKED_SOLO_5x5' ? sum.solo = a[x] : a[x];
+                            a[x].queueType === 'RANKED_FLEX_TT' ? sum.flex3 = a[x] : a[x];
                         }
+                        // then we get the ranked masters information for win rate comparison and store it as child of sum.
                         request('https://na1.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key='+key, (err,response,body) => {
                             if(err) throw err;
                             if(response.statusCode === 200) { 
                                 body = JSON.parse(body);
                                 var masters = body.entries;
                                 var masterWr = [];
+                                var total = 0;
                                 for (x=0; x<masters.length; x++ ) {
-                                    //loop
+                                    //loop through all the masters info and calculate the average win rate. 
                                     var out = (masters[x].wins/masters[x].losses).toFixed(2);
                                     masterWr.push(out);
+                                    total += parseInt(out);
                                 }
-                                var total = 0;
-                                for (x=0; x<masterWr.length; x++) {
-                                    total += parseInt(masterWr[x]);
-                                }
-                                var avg = total/masterWr.length;
-                                sum.masters = {avg:avg};
-                                var flexFr; 
-                                var soloFr;
-                                if(sum.solo) {
-                                    if (sum.solo.wr < 1) {
-                                        soloFr = ((avg - sum.solo.wr) * 100).toFixed(1);
-                                        soloFr += '% Short of a Positive Win Rate'
-                                    }
-                                    else {
-                                        soloFr = (((avg - sum.solo.wr) + 0.50) * 100).toFixed(1);
-                                        soloFr += '% Win rate is a climbing win rate'
-                                    }
-                                    sum.solo.fr = soloFr;
-                                }
-                                if(sum.flex) {
-                                    if (sum.flex.wr < 1) {
-                                        flexFr = ((avg - sum.flex.wr) * 100).toFixed(1);
-                                        flexFr += '% Short of a climbing win rate'
-                                    }
-                                    else {
-                                        flexFr = (((avg - sum.flex.wr) + 0.50) * 100).toFixed(1);
-                                        flexFr += '% Win rate is a climbing win rate'
-                                    }
-                                    sum.flex.fr = flexFr;
-                                }
+                                sum.masters = {avg:(total/masterWr.length)}
+                                // then we get the summoners match history by their account id.
                                 request('https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/'+sum.accountId+'?api_key='+key, (err,response,body) => {
                                     if(err) throw err;
                                     if(response.statusCode === 200) {
-                                        body = JSON.parse(body); //keys-matches, startIndex, endIndex, totalGames
+                                        body = JSON.parse(body); //body keys = matches, startIndex, endIndex, totalGames
                                         var matches = body.matches;
                                         sum.first5 = [];
+                                        // here we loop through all the matches to add the champions name to the object and save it as a key of the match object. 
                                         for(x=0; x<matches.length; x++) {
                                             for(var prop in champions) {
                                                 if(Number(champions[prop].key) === matches[x].champion) {
@@ -176,9 +128,7 @@ module.exports = (app) => {
                                                     } // end loop for finding if game is a win or loss + gathering game stats after identifying playeridentity.
                                                     sum.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
                                                     if(index === cb) {
-                                                        sum.css = {
-                                                            css: ["/assets/css/profile-main.css"]
-                                                        }
+                                                        
                                                         request('https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + sum.id + '?api_key=' + key, (err, response, body) => {
                                                             if (err) throw err;
                                                             if (response.statusCode == 200) {
