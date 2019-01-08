@@ -1,6 +1,6 @@
 <section id="header">
     <header>
-        <span class="image avatar"><img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/profileicon/{{profileIconId}}.png" alt="" /></span>
+        <span class="image avatar"><img src="http://ddragon.leagueoflegends.com/cdn/8.24.1/img/profileicon/{{profileIconId}}.png" alt="" /></span>
         <h1 id="logo">{{this.name}}</h1>
         <p>Level: {{this.summonerLevel}}</p>
     </header>
@@ -72,53 +72,9 @@
             <!-- Two -->
                 <section id="two">
                     <div class="container">
-                        <h3>Most Played Champions</h3>
-                            {{!-- {{#each masteries}}
-                                {{#each dataValues}}
-                        <div class="col-4">
-                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%; margin-right: auto; margin-left: auto" >
-                            <p>Champion Level : {{championLevel}}</p>
-                            <p>Champion Points: {{championPoints}}</p>
-                        </div>
-                        <div class="col-4">
-                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%;	 margin-right: auto; margin-left: auto">
-                        </div>
-                        <div class="col-4">
-                            <img src="http://ddragon.leagueoflegends.com/cdn/img/champion/loading/{{championName}}_0.jpg" alt="" style="height: auto; width: 30%; margin-right: auto; margin-left: auto">
-                        </div>
-                                {{/each}}
-                            {{/each}}
-                        {{#if errMsg}}
-                            <p>{{errMsg}}</p>
-                            <a href="/">Search a Summoner Name</a>
-                            {{else}}
-                        {{#if masteries}}
-                        <form method="POST" action="/profile">
-                            <div>
-                                <input type="hidden" name="id" id="id" value="{{this.id}}">
-                                <input type="hidden" name="name" id="name" value="{{this.name}}">
-                                <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
-                                <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
-                                <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
-                                <input type="submit" value="Hide Masteries">
-                                <p>{{errMsg}}</p>
-                            </div>
-                        </form>
-                        {{>mastery/masteries}}
-                        {{else}}
-                            <form method="POST" action="/masteries">
-                                <div>
-                                    <input type="hidden" name="id" id="id" value="{{this.id}}">
-                                    <input type="hidden" name="name" id="name" value="{{this.name}}">
-                                    <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
-                                    <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
-                                    <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
-                                    <input type="submit" value="Get Masteries">
-                                    <p>{{errMsg}}</p>
-                                    {{/if}}
-                                </div>
-                            </form>
-                        {{/if}} --}}
+                        {{#if masteries.top3}}
+                        {{>mastery/top3}}
+                        {{/if}}
                     </div>
                 </section>
 

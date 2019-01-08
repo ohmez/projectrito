@@ -2749,7 +2749,7 @@ input, select, textarea {
 			}
 
 				#header > footer .icons li a {
-					color: #b7eadc;
+					color: #e2e2e2;
 				}
 
 		#header > nav {
@@ -3286,4 +3286,33 @@ input, select, textarea {
 				padding: 0;
 			}
 
+	}
+
+	.top3champions {
+		text-align: center;
+	}
+
+	.champion-mastery {
+		position: relative;
+	}
+
+	/* .mastery-image  {
+		opacity: 0.5;
+	}
+	img.mastery-image:hover {
+		opacity: 1;
+		display: inline;
+	} */
+
+	.mastery-level {
+		position: absolute;
+		transform: translate(-50%,0);
+		top: 15%;
+		width: 100px;
+	}
+
+	.chest-found {
+		position: absolute;
+		transform: translate(-50%,-105%);
+		width: 135px;
 	}

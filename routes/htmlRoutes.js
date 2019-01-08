@@ -42,7 +42,10 @@ module.exports = (app) => {
                 sum.updated = new Date().toDateString();
                 sum.name = sum.name.trim();
                 sum.css = {
-                    css: ["/assets/css/profile-main.css"]
+                    css: [
+                        "/assets/css/profile-main.css",
+                        "/assets/css/style.css"
+                ]
                 }
                 // then we get the ranked information and store it as children of the summoner object henceforth known as `sum`
                 request('https://na1.api.riotgames.com/lol/league/v4/positions/by-summoner/'+sum.id+'?api_key='+key,(err,response,body) => {
