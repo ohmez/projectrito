@@ -1,29 +1,27 @@
 <div id="first5Matches">
-    <div class="container">
-        <h3>Most Recent Matches</h3>
-        <h5>{{this.name}}'s account was last played on {{this.revisionDate}}</h5>
-        <h5>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h5>
-            <article>
-                {{#each first5}}
-                    <div class="table-wrapper">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td style="text-align: center;">
-                                        <img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{{championName}}.png" alt="" style="margin: 0 , 0;"/>
-                                        <h3>{{#if win}} Victory {{else}} Defeat {{/if}}</h3>
-                                    </td>
-                                    <td style="vertical-align: middle;">
-                                        <h3>{{championName}}</h3>
-                                        <h5>Lane : {{lane}}</h5>
-                                        <h5>Your KDA : {{kda}}   ||  Kills : {{kills}} / Assists : {{assists}} / Deaths : {{deaths}}</h5>
-                                        <h5>Creep Score : {{cs}}   ||  Vision Score : {{vs}}</h5>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                {{/each}}
-            </article>
-    </div>
+    <h3>Most Recent Matches</h3>
+    <h5>{{this.name}}'s account was last played on {{this.revisionDate}}</h5>
+    <h5>{{this.name}}'s QwikStats was last updated on {{this.updated}}</h5>
+        <article>
+            {{#each first5}}
+                <div class="table-wrapper">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <img src="http://ddragon.leagueoflegends.com/cdn/6.24.1/img/champion/{{championName}}.png" alt="" style="margin: 0 , 0;"/>
+                                    <h3>{{#if win}} Victory {{else}} Defeat {{/if}}</h3>
+                                </td>
+                                <td style="vertical-align: middle;">
+                                    <h3>{{championName}}</h3>
+                                    <h5>Lane : {{lane}}</h5>
+                                    <h5>Your KDA : {{kda}}   ||  Kills : {{kills}} / Assists : {{assists}} / Deaths : {{deaths}}</h5>
+                                    <h5>Creep Score : {{cs}}   ||  Vision Score : {{vs}}</h5>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            {{/each}}
+        </article>
 </div>
