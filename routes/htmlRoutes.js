@@ -26,6 +26,202 @@ module.exports = (app) => {
         });
         res.location('/profile');
     });
+    app.get("/profile/:sumname", (req,res) => {
+        var sum = {};
+        sum.name = req.params.sumname;
+       (function getSummoner() {
+        request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
+            if(!err && response.statusCode === 200) {
+                console.log('api summoner call worked');
+                sum = JSON.parse(body);
+                var utcSeconds = sum.revisionDate;
+                var d = new Date(0);
+                d.setUTCMilliseconds(utcSeconds);
+                sum.revisionDate = d;
+                sum.updated = new Date().toDateString();
+                sum.name = sum.name.trim();
+                sum.css = {
+                    css: [
+                        "/assets/css/profile-main.css",
+                        "/assets/css/style.css"
+                    ]
+                }
+                getRanked();
+            }
+            else {
+                sum.errMsg = "Something went wrong retrieving your summoner account information";
+                res.render("qwikstats", sum);
+                console.log(response);
+            }
+        });
+        })(); // summoner triggers getRanked stats. 
+        function getRanked() {
+            request('https://na1.api.riotgames.com/lol/league/v4/positions/by-summoner/'+sum.id+'?api_key='+key,(err,response,body) => {
+            if(!err && response.statusCode === 200) {
+                var a = JSON.parse(body);
+                for (x=0; x<a.length; x++) {
+                    a[x].games = (a[x].wins + a[x].losses);
+                    a[x].wr = (a[x].wins/a[x].losses).toFixed(2);
+                    a[x].queueType === 'RANKED_FLEX_SR' ? sum.flex5 = a[x] : a[x];
+                    a[x].queueType === 'RANKED_SOLO_5x5' ? sum.solo = a[x] : a[x];
+                    a[x].queueType === 'RANKED_FLEX_TT' ? sum.flex3 = a[x] : a[x];
+                }
+                getMasters();
+            }
+            else {
+                sum.errMsg = "Something went wrong retrieving your ranked information";
+                res.render("qwikstats", sum);
+                console.log(response);
+            }
+        });
+        }; // ranked triggers getMasters stats.
+        function getMasters() {
+            request('https://na1.api.riotgames.com/lol/league/v4/grandmasterleagues/by-queue/RANKED_SOLO_5x5?api_key=' + key, (err, response, body) => {
+                if (!err && response.statusCode === 200) {
+                    body = JSON.parse(body);
+                    var masters = body.entries;
+                    var masterWr = [];
+                    var total = 0;
+                    for (x = 0; x < masters.length; x++) {
+                        //loop through all the masters info and calculate the average win rate. 
+                        var out = (masters[x].wins / masters[x].losses).toFixed(2);
+                        masterWr.push(out);
+                        total += parseInt(out);
+                    }
+                    sum.masters = { avg: (total / masterWr.length) }
+                    getMatches();
+                }
+                else {
+                    sum.errMsg = "Something went wrong retrieving masters information";
+                    res.render("qwikstats",sum);
+                    console.log(response);
+                }
+            });
+        }; // masters triggers match history list.
+        function getMatches() {
+            request('https://na1.api.riotgames.com/lol/match/v4/matchlists/by-account/' + sum.accountId + '?api_key=' + key, (err, response, body) => {
+                if (!err && response.statusCode === 200) {
+                    body = JSON.parse(body); //body keys = matches, startIndex, endIndex, totalGames
+                    var matches = body.matches;
+                    sum.matches = {};
+                    sum.matches.first5 = [];
+                    // here we loop through all the matches to add the champions name to the object and save it as a key of the match object. 
+                    for (x = 0; x < matches.length; x++) {
+                        for (var prop in champions) {
+                            if (Number(champions[prop].key) === matches[x].champion) {
+                                matches[x].championName = champions[prop].name;
+                            }
+                        }
+                        if (x < 5) {
+                            sum.matches.first5.push(matches[x]);
+                        }
+                    }
+                    sum.matches.last100 = matches;
+                    getMasteries();
+                }
+                else {
+                    sum.errMsg = "Something went wrong retrieving your match history information";
+                    res.render("qwikstats",sum);
+                    console.log(response);
+                }
+            });
+        }; // matches triggers masteries
+        function getMasteries() {
+            request('https://na1.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-summoner/' + sum.id + '?api_key=' + key, (err, response, body) => {
+                if (err) throw err;
+                if (response.statusCode == 200) {
+                    console.log('api masteries worked');
+                    var masteries = JSON.parse(body);
+                    var edited = [];
+                    var top3 = [];
+                    for (x = 0; x < masteries.length; x++) {
+                        var utcSeconds = parseInt(masteries[x].lastPlayTime);
+                        var d = new Date(0).setUTCMilliseconds(utcSeconds);
+                        masteries[x].lastPlayTime = d;
+                        for (var prop in champions) {
+                            if (Number(champions[prop].key) === masteries[x].championId) {
+                                masteries[x].championName = champions[prop].name;
+                            }
+                        }
+                        edited.push(masteries[x]);
+                        if(x<=2) {
+                            top3.push(masteries[x])
+                        }
+                    }
+                    sum.masteries = { all: edited };
+                    sum.masteries.top3 = top3;
+                    // console.log(sum.masteries.top3, 'this is top 3 masteries');
+                    res.json(sum);
+                } else {
+                    sum.errMsg = 'Something went wrong retrieving your champion masteries';
+                    res.render('qwikstats', sum);
+                    console.log(response);
+                }
+            });
+            sum.matches.first5.forEach((match, index) => {
+                getMatchData(parseInt(match.gameId),sum.id, index);
+            });
+        };
+        function getMatchData(matchNum,sumId,index) {
+            request('https://na1.api.riotgames.com/lol/match/v4/matches/'+matchNum+'?api_key='+key, (err,response,body) => {
+                if(!err && response.statusCode === 200) {
+                    console.log('match data worked');
+                    body = JSON.parse(body);
+                    body.participantIdentities.forEach(participant => participant.player.summonerId === sumId ? sum.matches.first5[index].playerNum = parseInt(participant.participantId): participant);
+                    var avKda = [];
+                    var totKda = 0;
+                    body.participants.forEach(player => {
+                        var stats = player.stats;
+                        var upsum = sum.matches.first5[index];
+                        upsum.banana = 'something';
+                        console.log(upsum, 'this is upsum');
+                        avKda.push(Number(stats.kills+stats.assists/stats.deaths));
+                        stats.deaths === 0? totKda += Number(stats.kills + stats.assists) : totKda += Number(stats.kills+stats.assists/ stats.deaths);
+                        Number(player.participantId) === Number(upsum.playerNum) ? (upsum) => {
+                            upsum.win = stats.win
+                            upsum.kills = stats.kills;
+                            upsum.assists = stats.assists;
+                            upsum.deaths = stats.deaths;
+                            upsum.cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled);
+                            upsum.vs = stats.visionScore;
+                            upsum.fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false;
+                            upsum.kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2);
+                            } : upsum;
+                            console.log(upsum, 'second one');
+                    });
+                    sum.matches.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
+                    // for (var y = 0; y < body.participants.length; y++) {
+                    //     var stats = body.participants[y].stats;
+                    //     avKda.push(Number(stats.kills+stats.assists/stats.deaths));
+                    //     if(stats.deaths === 0) {
+                    //         totKda += Number(stats.kills + stats.assists);
+                    //     } else {
+                    //         totKda += Number(stats.kills+stats.assists/ stats.deaths);
+                    //     }
+                        // if (Number(body.participants[y].participantId) === Number(sum.matches.first5[index].playerNum)) {
+                        //     // Stats have been found for player in said match
+                        //     sum.matches.first5[index].win = stats.win;
+                        //     sum.matches.first5[index].kills = stats.kills;
+                        //     sum.matches.first5[index].assists = stats.assists;
+                        //     sum.matches.first5[index].deaths = stats.deaths;
+                        //     sum.matches.first5[index].cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled);
+                        //     sum.matches.first5[index].vs = stats.visionScore;
+                        //     sum.matches.first5[index].fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false;
+                        //     sum.matches.first5[index].kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2);
+                        // }
+                    // } // end loop for finding if game is a win or loss + gathering game stats after identifying playeridentity.
+                    // console.log(sum.matches.first5[index]);
+                }
+                else {
+                    sum.errMsg = 'Something went wrong retrieving your match specific data';
+                    res.render('qwikstats', sum);
+                    console.log(response.body);
+                }
+            });
+        };
+        
+
+    });
     app.get("/stats/:sumname", (req,res) => {
         var sum = {};
         sum.name = req.params.sumname;
