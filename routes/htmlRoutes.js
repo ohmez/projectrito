@@ -29,6 +29,7 @@ module.exports = (app) => {
     app.get("/profile/:sumname", (req,res) => {
         var sum = {};
         sum.name = req.params.sumname;
+        // selfcalling function to start the API chain to get all of the summoners information for their profile
        (function getSummoner() {
         request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
             if(!err && response.statusCode === 200) {
@@ -151,66 +152,46 @@ module.exports = (app) => {
                     sum.masteries = { all: edited };
                     sum.masteries.top3 = top3;
                     // console.log(sum.masteries.top3, 'this is top 3 masteries');
-                    res.json(sum);
+                    sum.matches.first5.forEach((match, index) => {
+                        getMatchData(parseInt(match.gameId),sum.id, index, sum.matches.first5.length);
+                    });
                 } else {
                     sum.errMsg = 'Something went wrong retrieving your champion masteries';
                     res.render('qwikstats', sum);
                     console.log(response);
                 }
             });
-            sum.matches.first5.forEach((match, index) => {
-                getMatchData(parseInt(match.gameId),sum.id, index);
-            });
+           
         };
-        function getMatchData(matchNum,sumId,index) {
-            request('https://na1.api.riotgames.com/lol/match/v4/matches/'+matchNum+'?api_key='+key, (err,response,body) => {
-                if(!err && response.statusCode === 200) {
+        function getMatchData(matchNum,sumId,index, max) {
+            request('https://na1.api.riotgames.com/lol/match/v4/matches/' + matchNum + '?api_key=' + key, (err, response, body) => {
+                if (!err && response.statusCode === 200) {
                     console.log('match data worked');
                     body = JSON.parse(body);
-                    body.participantIdentities.forEach(participant => participant.player.summonerId === sumId ? sum.matches.first5[index].playerNum = parseInt(participant.participantId): participant);
+                    body.participantIdentities.forEach(participant => participant.player.summonerId === sumId ? sum.matches.first5[index].playerNum = parseInt(participant.participantId) : participant);
                     var avKda = [];
                     var totKda = 0;
                     body.participants.forEach(player => {
                         var stats = player.stats;
                         var upsum = sum.matches.first5[index];
-                        upsum.banana = 'something';
-                        console.log(upsum, 'this is upsum');
-                        avKda.push(Number(stats.kills+stats.assists/stats.deaths));
-                        stats.deaths === 0? totKda += Number(stats.kills + stats.assists) : totKda += Number(stats.kills+stats.assists/ stats.deaths);
-                        Number(player.participantId) === Number(upsum.playerNum) ? (upsum) => {
-                            upsum.win = stats.win
-                            upsum.kills = stats.kills;
-                            upsum.assists = stats.assists;
-                            upsum.deaths = stats.deaths;
-                            upsum.cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled);
-                            upsum.vs = stats.visionScore;
-                            upsum.fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false;
-                            upsum.kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2);
-                            } : upsum;
-                            console.log(upsum, 'second one');
+                        avKda.push(Number(stats.kills + stats.assists / stats.deaths));
+                        stats.deaths === 0 ? totKda += Number(stats.kills + stats.assists) : totKda += Number(stats.kills + stats.assists / stats.deaths);
+                        if (Number(player.participantId) === Number(upsum.playerNum)) {
+                            upsum.win = stats.win,
+                            upsum.kills = stats.kills,
+                            upsum.assists = stats.assists,
+                            upsum.deaths = stats.deaths,
+                            upsum.cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled),
+                            upsum.vs = stats.visionScore,
+                            upsum.fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false,
+                            upsum.kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2)
+                        }
+                        sum.matches.first5[index] = upsum;
                     });
-                    sum.matches.first5[index].avg = {kda: Number(Number(totKda)/Number(avKda.length)).toFixed(2)};
-                    // for (var y = 0; y < body.participants.length; y++) {
-                    //     var stats = body.participants[y].stats;
-                    //     avKda.push(Number(stats.kills+stats.assists/stats.deaths));
-                    //     if(stats.deaths === 0) {
-                    //         totKda += Number(stats.kills + stats.assists);
-                    //     } else {
-                    //         totKda += Number(stats.kills+stats.assists/ stats.deaths);
-                    //     }
-                        // if (Number(body.participants[y].participantId) === Number(sum.matches.first5[index].playerNum)) {
-                        //     // Stats have been found for player in said match
-                        //     sum.matches.first5[index].win = stats.win;
-                        //     sum.matches.first5[index].kills = stats.kills;
-                        //     sum.matches.first5[index].assists = stats.assists;
-                        //     sum.matches.first5[index].deaths = stats.deaths;
-                        //     sum.matches.first5[index].cs = Number(stats.totalMinionsKilled + stats.neutralMinionsKilled);
-                        //     sum.matches.first5[index].vs = stats.visionScore;
-                        //     sum.matches.first5[index].fb = stats.firstBloodKill || stats.firstBlodAssist ? true : false;
-                        //     sum.matches.first5[index].kda = stats.deaths === 0 ? Number(stats.kills + stats.assists).toFixed(2) : Number(Number(stats.kills + stats.assists) / Number(stats.deaths)).toFixed(2);
-                        // }
-                    // } // end loop for finding if game is a win or loss + gathering game stats after identifying playeridentity.
-                    // console.log(sum.matches.first5[index]);
+                    sum.matches.first5[index].avg = { kda: Number(Number(totKda) / Number(avKda.length)).toFixed(2) };
+                    if(index >= max -1) {
+                        res.render('qwikstats',sum);
+                    }
                 }
                 else {
                     sum.errMsg = 'Something went wrong retrieving your match specific data';
@@ -218,7 +199,7 @@ module.exports = (app) => {
                     console.log(response.body);
                 }
             });
-        };
+        }; // end get match specific data function. 
         
 
     });
