@@ -41,12 +41,11 @@ module.exports = (app) => {
                 sum.revisionDate = d;
                 sum.updated = new Date().toDateString();
                 sum.name = sum.name.trim();
-                sum.css = {
-                    css: [
+                sum.css = [
                         "/assets/css/profile-main.css",
                         "/assets/css/style.css"
-                    ]
-                }
+                        ]
+                sum.title = '' +sum.name + '\'s rito';
                 getRanked();
             }
             else {
