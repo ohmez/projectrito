@@ -29,32 +29,45 @@ module.exports = (app) => {
     app.get("/profile/:sumname", (req,res) => {
         var sum = {};
         sum.name = req.params.sumname;
+        db.Summoner.findOne({where: {name: sum.name}}).then(function(found) {
+            if(!found) {
+                getSummoner();
+
+            } else {
+                console.log('\n found summoner in db =====')
+                console.log(found.dataValues);
+                var returnSum = JSON.parse(found.dataValues.json)
+                console.log('------------\n')
+                console.log(returnSum);
+                res.render('qwikstats',returnSum);
+            }
+        })
         // selfcalling function to start the API chain to get all of the summoners information for their profile
-       (function getSummoner() {
-        request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
-            if(!err && response.statusCode === 200) {
-                console.log('api summoner call worked');
-                sum = JSON.parse(body);
-                var utcSeconds = sum.revisionDate;
-                var d = new Date(0);
-                d.setUTCMilliseconds(utcSeconds);
-                sum.revisionDate = d;
-                sum.updated = new Date().toDateString();
-                sum.name = sum.name.trim();
-                sum.css = [
-                        "/assets/css/profile-main.css",
-                        "/assets/css/style.css"
-                        ]
-                sum.title = '' +sum.name + '\'s rito';
-                getRanked();
-            }
-            else {
-                sum.errMsg = "Something went wrong retrieving your summoner account information";
-                res.render("qwikstats", sum);
-                console.log(response);
-            }
-        });
-        })(); // summoner triggers getRanked stats. 
+       function getSummoner() {
+            request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
+                if(!err && response.statusCode === 200) {
+                    console.log('api summoner call worked');
+                    sum = JSON.parse(body);
+                    var utcSeconds = sum.revisionDate;
+                    var d = new Date(0);
+                    d.setUTCMilliseconds(utcSeconds);
+                    sum.revisionDate = d;
+                    sum.updated = new Date().toDateString();
+                    sum.name = sum.name.trim();
+                    sum.css = [
+                            "/assets/css/profile-main.css",
+                            "/assets/css/style.css"
+                            ]
+                    sum.title = '' +sum.name + '\'s rito';
+                    getRanked();
+                }
+                else {
+                    sum.errMsg = "Something went wrong retrieving your summoner account information";
+                    res.render("qwikstats", sum);
+                    console.log(response);
+                }
+            });
+        }; // summoner triggers getRanked stats. 
         function getRanked() {
             request('https://na1.api.riotgames.com/lol/league/v4/positions/by-summoner/'+sum.id+'?api_key='+key,(err,response,body) => {
             if(!err && response.statusCode === 200) {
@@ -189,7 +202,36 @@ module.exports = (app) => {
                     });
                     sum.matches.first5[index].avg = { kda: Number(Number(totKda) / Number(avKda.length)).toFixed(2) };
                     if(index >= max -1) {
-                        res.render('qwikstats',sum);
+                        setTimeout(() =>res.render('qwikstats',sum),500);
+                        setTimeout(() => {
+                            db.Summoner.findAll({where: {id: sum.id}}).then((summoners) => {
+                                if(summoners.length === 0) {
+                                    //create
+                                    db.Summoner.create({
+                                        name: sum.name,
+                                        id: sum.id,
+                                        accountId: sum.accountId,
+                                        json: JSON.stringify(sum),
+                                        updated: sum.updated
+                                    }).then((added) => {
+                                        console.log('new summoner added to database');
+                                    }).catch((err) => console.log(err));
+                                } else {
+                                    db.Summoner.update({
+                                        name: sum.name,
+                                        id: sum.id,
+                                        accountId: sum.accountId,
+                                        json: JSON.stringify(sum),
+                                        updated: sum.updated
+                                    }, {where: {id: sum.id}}).then((updated) => {
+                                        console.log(updated);
+                                    })
+                                    //update
+                                }
+                            })
+                        },1000);
+                        // console.log(sum.matches.first5);
+                        // res.render('qwikstats',sum);
                     }
                 }
                 else {
