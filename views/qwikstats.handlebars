@@ -34,10 +34,11 @@
                     </div>
                     <div class="container">
                         <header class="major">
-                            <h3>Summoner Details</h3>
+                            <h3>Ranked Summoner Details</h3>
                         </header>
                             <div class="box alt">
                                 <div class="row gtr-50 gtr-uniform" style="text-align: center;">
+                                    {{#if this.flex5.tier}}
                                     <div class="col-4">
                                         <span class="image fit">
                                             <img src="/images/{{this.flex5.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;" />
@@ -46,6 +47,8 @@
                                             <p>Win Ratio: {{this.flex5.wr}}</p>
                                         </span>
                                     </div>
+                                    {{/if}}
+                                    {{#if this.solo.tier}}
                                     <div class="col-4">
                                         <span class="image fit">
                                             <img src="/images/{{this.solo.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;"/>
@@ -54,6 +57,8 @@
                                             <p>Win Ratio: {{this.solo.wr}}</p>
                                         </span>
                                     </div>
+                                    {{/if}}
+                                    {{#if this.flex3.tier}}
                                     <div class="col-4">
                                         <span class="image fit">
                                             <img src="/images/{{this.flex3.tier}}_Emblem.png" alt="" style="display: block; width: 90%; margin-right: auto; margin-left: auto;"/>
@@ -62,6 +67,7 @@
                                             <p>Win Ratio: {{this.flex3.wr}}</p>
                                         </span>
                                     </div>
+                                    {{/if}}
                                 </div>
                             </div>
                         <h4 style="text-align:center">Any Win Ratio greater than 1 is a climbing WR.</h4>

@@ -18,11 +18,6 @@ module.exports = (sequelize, DataTypes) => {
     updated: DataTypes.DATE,
     accountId: DataTypes.STRING
   }, {});
-  Summoner.associate = function(models) {
-    // associations can be defined here
-    // Summoner.hasMany(models.Mastery, {
-    //   onDelete: "cascade"
-    // });
-  };
+  
   return Summoner;
 };
