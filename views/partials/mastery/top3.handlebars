@@ -15,15 +15,3 @@
         </div>
     {{/each}} 
     </div>
-{{!-- All masteries button --}}
-    <form method="POST" action="/masteries">
-        <div>
-            <input type="hidden" name="id" id="id" value="{{this.id}}">
-            <input type="hidden" name="name" id="name" value="{{this.name}}">
-            <input type="hidden" name="summonerLevel" id="summonerLevel" value="{{this.summonerLevel}}">
-            <input type="hidden" name="profileIconId" id="profileIconId" value="{{this.profileIconId}}">
-            <input type="hidden" name="revisionDate" id="revisionDate" value="{{this.revisionDate}}">
-            <input type="submit" value="Get Masteries">
-            <p>{{errMsg}}</p>
-        </div>
-    </form>

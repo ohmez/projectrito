@@ -35,14 +35,12 @@ module.exports = (app) => {
                 getSummoner();
             } else {
                 var returnSum = JSON.parse(found.dataValues.json)
-                var now = new Date(0);
-                console.log('\n found summoner in db =====')
-                console.log(now, returnSum.updated)
-                console.log('------------\n')
-                res.render('qwikstats',returnSum);
+                var now = new Date();
+                var last = new Date(returnSum.updated);
+                now.getTime() > (last.getTime()+300000)?getSummoner():res.render('qwikstats',returnSum);
             }
         })
-        // selfcalling function to start the API chain to get all of the summoners information for their profile
+        //First function to start the API chain to get all of the summoners information for their profile
        function getSummoner() {
             request('https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/'+sum.name+'?api_key='+key, (err, response, body) =>{
                 if(!err && response.statusCode === 200) {
