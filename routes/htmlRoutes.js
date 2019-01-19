@@ -35,7 +35,7 @@ module.exports = (app) => {
                 getSummoner();
             } else {
                 var returnSum = JSON.parse(found.dataValues.json)
-                var now = new Date(0).toLocaleString();
+                var now = new Date(0);
                 console.log('\n found summoner in db =====')
                 console.log(now, returnSum.updated)
                 console.log('------------\n')
@@ -52,7 +52,7 @@ module.exports = (app) => {
                     var d = new Date(0);
                     d.setUTCMilliseconds(utcSeconds);
                     sum.revisionDate = d;
-                    sum.updated = new Date().toLocaletring();
+                    sum.updated = new Date();
                     sum.name = sum.name.trim();
                     sum.css = [
                             "/assets/css/profile-main.css",
@@ -122,7 +122,7 @@ module.exports = (app) => {
                     for (x = 0; x < matches.length; x++) {
                         for (var prop in champions) {
                             if (Number(champions[prop].key) === matches[x].champion) {
-                                matches[x].championName = champions[prop].name.trim();
+                                matches[x].championName = champions[prop].id;
                             }
                         }
                         if (x < 5) {
@@ -153,7 +153,7 @@ module.exports = (app) => {
                         masteries[x].lastPlayTime = d;
                         for (var prop in champions) {
                             if (Number(champions[prop].key) === masteries[x].championId) {
-                                masteries[x].championName = champions[prop].name.trim();
+                                masteries[x].championName = champions[prop].id;
                             }
                         }
                         edited.push(masteries[x]);
