@@ -68,6 +68,9 @@
                                     {{/if}}
                                 </div>
                             </div>
+                        {{#if this.errMsg}}
+                        <h1>{{this.errMsg}}</h1>
+                        {{/if}}
                         <h4 style="text-align:center">Any Win Ratio greater than 1 is a climbing WR.</h4>
                         <h4 style="text-align:center">Currently the average Masters Win Ratio is {{this.masters.avg}}</h4>
                     </div>
