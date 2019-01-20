@@ -53,6 +53,10 @@ module.exports = (app) => {
                 }
                 else {
                     sum.errMsg = "Something went wrong retrieving your summoner account information";
+                    sum.css = [
+                        "/assets/css/profile-main.css",
+                        "/assets/css/style.css"
+                        ];
                     res.render("qwikstats", sum);
                     console.log(response.body);
                 }
