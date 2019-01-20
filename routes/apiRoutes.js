@@ -7,6 +7,10 @@ var champions = JSON.parse(JSON.stringify(jsonfile.data));
 module.exports = (app) => {
     app.post("/search",(req,res) => {
         var name = req.body.summonerName.trim();
-        res.redirect("/profile/"+name);
+        if(name.length > 3) {
+            res.redirect("/profile/"+name);
+        } else {
+            res.redirect("/");
+        }
     })
 };
