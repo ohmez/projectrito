@@ -10,7 +10,7 @@ var champions = JSON.parse(JSON.stringify(jsonfile.data));
 module.exports = (app) => {
     app.get("/", (req,res) => {
         res.render("home", {
-            title: "My_Rito",
+            title: "My Rito",
             css: ["/assets/css/home-main.css"]
         });
     });
