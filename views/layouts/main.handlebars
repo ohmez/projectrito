@@ -9,6 +9,12 @@
         {{#each css}}
     <link  rel="stylesheet" href="{{this}}" type="text/css">
         {{/each}}
+    	<!-- for FF, Chrome, Opera -->
+	<link rel="icon" type="image/png" href="/images/favicons/favicon-16x16.png" sizes="16x16">
+	<link rel="icon" type="image/png" href="/images/favicons/favicon-32x32.png" sizes="32x32">
+	<!-- for IE -->
+	<link rel="icon" type="image/x-icon" href="/images/favicons/favicon.ico">
+	<link rel="shortcut icon" type="image/x-icon" href="/images/favicons/favicon.ico" />
     <title>{{this.title}}</title>
 </head>
 <body>
