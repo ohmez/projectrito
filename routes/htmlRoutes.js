@@ -54,7 +54,7 @@ module.exports = (app) => {
                 else {
                     sum.errMsg = "Something went wrong retrieving your summoner account information";
                     res.render("qwikstats", sum);
-                    console.log(response);
+                    console.log(response.body);
                 }
             });
         }; // summoner triggers getRanked stats. 
@@ -74,7 +74,7 @@ module.exports = (app) => {
             else {
                 sum.errMsg = "Something went wrong retrieving your ranked information";
                 res.render("qwikstats", sum);
-                console.log(response);
+                console.log(response.body);
             }
         });
         }; // ranked triggers getMasters stats.
@@ -97,7 +97,7 @@ module.exports = (app) => {
                 else {
                     sum.errMsg = "Something went wrong retrieving masters information";
                     res.render("qwikstats",sum);
-                    console.log(response);
+                    console.log(response.body);
                 }
             });
         }; // masters triggers match history list.
@@ -125,7 +125,7 @@ module.exports = (app) => {
                 else {
                     sum.errMsg = "Something went wrong retrieving your match history information";
                     res.render("qwikstats",sum);
-                    console.log(response);
+                    console.log(response.body);
                 }
             });
         }; // matches triggers masteries
@@ -159,7 +159,7 @@ module.exports = (app) => {
                 } else {
                     sum.errMsg = 'Something went wrong retrieving your champion masteries';
                     res.render('qwikstats', sum);
-                    console.log(response);
+                    console.log(response.body);
                 }
             });
            
@@ -214,7 +214,7 @@ module.exports = (app) => {
                                         json: JSON.stringify(sum),
                                         updated: sum.updated
                                     }, {where: {id: sum.id}}).then((updated) => {
-                                        console.log(updated);
+                                        console.log('summoner has been updated');
                                     })
                                 }
                             })

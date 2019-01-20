@@ -8,7 +8,6 @@ var app = express();
 var PORT = process.env.PORT || 3030;
 
 var keys = require("./keys");
-var key = keys.riot.id;
 
 // Middleware
 app.use(express.urlencoded({ extended: false }));
